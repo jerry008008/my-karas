@@ -6,6 +6,52 @@ karas.inject.requestAnimationFrame = function(cb) {
 };
 
 class Root extends karas.Root {
+  // 需要小程序内部监听事件手动调用
+  onEvent(e) {
+    this.__wrapEvent(e, data => {
+      this.__emitEvent(data);
+    });
+  }
+  __wrapEvent(e, cb) {
+    const id = this.__ctx.id || this.__dom?.id;
+    id && my.createSelectorQuery().select(`#${id}`).boundingClientRect().exec(ret => {
+      let x, y;
+
+      if (ret && ret[0] && e.detail) {
+        const { clientX, clientY, x: ox, y: oy } = e.detail;
+        const { left, top, width, height } = ret[0];
+        const { __scx, __scy } = this;
+
+        x = ox ?? clientX - left;
+        y = oy ?? clientY - top;
+
+        if (!karas.util.isNil(__scx)) {
+          x /= __scx;
+        } else {
+          x *= this.width / width;
+        }
+        if (!karas.util.isNil(__scy)) {
+          y /= __scy;
+        } else {
+          y *= this.height / height;
+        }
+      }
+      cb({
+        event: e,
+        stopPropagation() {
+          this.__stopPropagation = true;
+        },
+        stopImmediatePropagation() {
+          this.__stopPropagation = true;
+          this.__stopImmediatePropagation = true;
+        },
+        preventDefault() {},
+        x,
+        y,
+        __hasEmitted: false,
+      });
+    });
+  }
   appendTo(dom) {
     if(karas.util.isFunction(dom.getContext)) {
       this.__dom = dom;
@@ -43,9 +89,9 @@ const LOADED = karas.inject.LOADED;
 
 karas.inject.measureImg = function(url, cb, optinos = {}) {
   let { root, width = 0, height = 0 } = optinos;
-  let ctx = root.ctx;
+  let { dom } = root;
   if(url.indexOf('data:') === 0) {
-    let img = ctx.createImage();
+    let img = dom.createImage();
     img.onload = function() {
       cb({
         success: true,
@@ -74,7 +120,7 @@ karas.inject.measureImg = function(url, cb, optinos = {}) {
     my.getImageInfo({
       src: url,
       success: function(res) {
-        let img = ctx.createImage();
+        let img = dom.createImage();
         img.onload = function() {
           cache.state = LOADED;
           cache.success = true;
@@ -99,7 +145,7 @@ karas.inject.measureImg = function(url, cb, optinos = {}) {
 };
 
 karas.inject.isDom = function(o) {
-  return o && karas.util.isFunction(o.arc);
+  return o && karas.util.isFunction(o.getContext);
 }
 
 const CANVAS = {};
