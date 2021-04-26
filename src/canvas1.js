@@ -26,6 +26,8 @@ export default function injectCanvas1(karas, createVd, Root) {
   const INIT = karas.inject.INIT;
   const LOADING = karas.inject.LOADING;
   const LOADED = karas.inject.LOADED;
+
+  karas.inject.checkSupportFontFamily = () => false
   
   karas.inject.measureImg = function(url, cb, optinos = {}) {
     if(url.indexOf('data:') === 0) {
