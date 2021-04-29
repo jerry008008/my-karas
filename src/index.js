@@ -10,6 +10,7 @@ karas.inject.requestAnimationFrame = function(cb) {
 karas.myVersion = version;
 
 class Root extends karas.Root {
+  static __isCanvas2 = false;
   // 需要小程序内部监听事件手动调用
   onEvent(e) {
     this.__wrapEvent(e, data => {
@@ -58,6 +59,9 @@ class Root extends karas.Root {
   }
   appendTo(dom) {
     if(karas.util.isFunction(dom.getContext)) {
+      if (Root.__isCanvas2) {
+        karas.inject.requestAnimationFrame = dom.requestAnimationFrame.bind(dom) || karas.inject.requestAnimationFrame;
+      }
       this.__dom = dom;
       this.__ctx = dom.getContext('2d');
     }
@@ -90,6 +94,7 @@ export function setCanvasType(type) {
   }
   injected = true;
   if (type === 'canvas2') {
+    Root.__isCanvas2 = true;
     injectCanvas2(karas, createVd, Root);
   }
 }
