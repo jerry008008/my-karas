@@ -1,5 +1,6 @@
 import karas from 'karas';
 import { version } from '../package.json';
+import { isFunction } from './utils';
 import injectCanvas1 from './canvas1';
 import injectCanvas2 from './canvas2';
 
@@ -58,7 +59,7 @@ class Root extends karas.Root {
     });
   }
   appendTo(dom) {
-    if(karas.util.isFunction(dom.getContext)) {
+    if(isFunction(dom.getContext)) {
       if (Root.__isCanvas2) {
         karas.inject.requestAnimationFrame = dom.requestAnimationFrame.bind(dom) || karas.inject.requestAnimationFrame;
       }
