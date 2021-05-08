@@ -60,10 +60,12 @@ export default function injectCanvas2(karas, createVd, Root) {
   const INIT = karas.inject.INIT;
   const LOADING = karas.inject.LOADING;
   const LOADED = karas.inject.LOADED;
-  
+
+  let cacheDom = my._createOffscreenCanvas(1, 1);
+
   karas.inject.measureImg = function(url, cb, optinos = {}) {
-    let { root, width = 0, height = 0 } = optinos;
-    let { dom } = root;
+    let { root = {}, width = 0, height = 0 } = optinos;
+    let { dom = cacheDom } = root;
     if(url.indexOf('data:') === 0) {
       let img = dom.createImage();
       img.onload = function() {
