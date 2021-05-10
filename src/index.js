@@ -19,7 +19,7 @@ class Root extends karas.Root {
     });
   }
   __wrapEvent(e, cb) {
-    const id = this.__ctx.id || this.__dom?.id;
+    const id = this.__ctx?.id || this.__dom?.id;
     id && my.createSelectorQuery().select(`#${id}`).boundingClientRect().exec(ret => {
       let x, y;
 

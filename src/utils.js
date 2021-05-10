@@ -1,8 +1,5 @@
 const toString = {}.toString;
-function isType(type) {
-  return function(obj) {
-    return toString.call(obj) === '[object ' + type + ']';
-  }
-}
 
-export const isFunction = isType('CallbackFunction') || isType('Function');
+export const isFunction = function(obj) {
+  return toString.call(obj) === '[object CallbackFunction]' || toString.call(obj) === '[object Function]';
+}
